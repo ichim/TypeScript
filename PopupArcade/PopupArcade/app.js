@@ -58,6 +58,51 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
             ViewModel_1.DataModel = DataModel;
         })(ViewModel = Esriro.ViewModel || (Esriro.ViewModel = {}));
     })(Esriro || (Esriro = {}));
+    (function (Esriro) {
+        var Tasks;
+        (function (Tasks) {
+            var Popup;
+            (function (Popup) {
+                var PopupModel = /** @class */ (function () {
+                    function PopupModel(settings) {
+                        this.settings = settings;
+                        this.fields = undefined;
+                        this.title = undefined;
+                        this.content = [];
+                    }
+                    PopupModel.prototype.wrap = function () {
+                        var rezultat = undefined;
+                        this.fields = this.settings.layer.fields;
+                        var index = 0;
+                        for (var _i = 0, _a = this.fields; _i < _a.length; _i++) {
+                            var field = _a[_i];
+                            if (field.type === "string") {
+                                if (index === 0) {
+                                    this.title = "{" + field.name + "}";
+                                }
+                                else {
+                                    this._content_string = this._content_string + "<br>" + field.name + ": " + "{" + field.name + "}";
+                                }
+                            }
+                            else if (field.type === "integer" ||
+                                field.type === "small-integer" ||
+                                field.type === "double" ||
+                                field.type === "single" ||
+                                field.type === "long") {
+                                this._content_string = this._content_string + "<br>" + field.name + ": " + "{" + field.name + "}";
+                            }
+                            index++;
+                        }
+                        rezultat.title = this.title;
+                        rezultat.content = this._content_string;
+                        return rezultat;
+                    };
+                    return PopupModel;
+                }());
+                Popup.PopupModel = PopupModel;
+            })(Popup = Tasks.Popup || (Tasks.Popup = {}));
+        })(Tasks = Esriro.Tasks || (Esriro.Tasks = {}));
+    })(Esriro || (Esriro = {}));
     var view_model = Esriro.ViewModel;
     (function (Esriro) {
         var ControlPanel;
@@ -94,8 +139,8 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
         },
         operationalLayers: [
             {
-                url: "",
-                outFields: ["*"],
+                url: "https://services6.arcgis.com/Uwg97gPMK3qqaMen/ArcGIS/rest/services/judete/FeatureServer/0",
+                outFields: ["judet", "abrev", "Shape_Area"],
                 /*Aici puteti seta forma si formatul popup-ului*/
                 popupTemplate: { title: "Judetul {judet}", content: [{ type: "text", text: "Abreviere judet: <br> {abrev}" }] }
             }
