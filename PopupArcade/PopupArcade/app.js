@@ -37,10 +37,11 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
                     this._operational_layers = [];
                 }
                 DataModel.prototype.wrap = function () {
-                    for (var _i = 0, _a = this.settings.operationalLayers.layers; _i < _a.length; _i++) {
-                        var url = _a[_i];
+                    for (var _i = 0, _a = this.settings.operationalLayers; _i < _a.length; _i++) {
+                        var item = _a[_i];
                         var feature_layer = new FeatureLayer({
-                            url: url
+                            url: item.url,
+                            outFields: item.outFields
                         });
                         this._operational_layers.push(feature_layer);
                     }
@@ -63,16 +64,17 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
         },
         mapViewSettings: {
             center: [25.256, 46.235],
-            zoom: 10,
+            zoom: 8,
             divId: "viewDiv"
         }
     };
     var operational_layers = {
-        operationalLayers: {
-            layers: [
-                "https://services6.arcgis.com/Uwg97gPMK3qqaMen/arcgis/rest/services/judete_romania/FeatureServer/0"
-            ]
-        }
+        operationalLayers: [
+            {
+                url: "https://services6.arcgis.com/Uwg97gPMK3qqaMen/ArcGIS/rest/services/judete/FeatureServer/0",
+                outFields: ["*"]
+            }
+        ]
     };
     var view = new view_model.ViewModel(view_settings);
     view.wrap();
