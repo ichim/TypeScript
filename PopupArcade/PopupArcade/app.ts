@@ -66,9 +66,7 @@ module Esriro.ViewModel
             }
         }
     }
-
     export interface IDataModel { wrap(): IDataModelOutput; }
-
     export class DataModel implements IDataModel
     {/*acesta clasa permite crearea continutului hartii/layere operationale*/
         _operational_layers: FeatureLayer[]= [];
@@ -95,9 +93,6 @@ module Esriro.ViewModel
     }
 }
 
-
-
-
 import view_model = Esriro.ViewModel;
 let view_settings: view_model.IViewModelSettings = {
     mapSettings: {
@@ -121,7 +116,6 @@ let view: view_model.IViewModel = new view_model.ViewModel(view_settings);
 view.wrap();
 let data: view_model.IDataModel = new view_model.DataModel(operational_layers);
 let data_model = data.wrap();
-
 view.addDataModel(data_model);
 
 
