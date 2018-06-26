@@ -3,20 +3,30 @@ import Map = require("esri/Map");
 import MapView = require("esri/views/MapView");
 import FeatureLayer = require("esri/layers/FeatureLayer");
 
-
-interface IDataModelSettings
+interface IDataModelInput
 {
+    operationalLayers: IOperationalLayersUrl;
+}
 
+interface IOperationalLayersUrl
+{
+    layers: string[];
+}
+
+interface IDataModelOutput
+{
+    operationalLayers: IOperationalLayersFeatureLayer;
+}
+
+interface IOperationalLayersFeatureLayer
+{
+    layers: FeatureLayer[];
 }
 
 module Esriro.ViewModel
 {/*Permite afisarea componentelor principale ale aplicatiei (Map/ViewMap) si adaugarea de surse de date (FeatureLayers)*/
-
     export interface IViewModel
-    {
-        wrap(): void;
-        addDataModel(data_model: IDataModelSettings):void;
-    }
+    {wrap(): void;addDataModel(data_model: IDataModelOutput):void;}
     export interface IViewModelSettings
     {
         mapSettings: IMapSettings;
@@ -48,27 +58,43 @@ module Esriro.ViewModel
                 container:this.settings.mapViewSettings.divId
             });
         }
-        addDataModel(data_model: IDataModelSettings):void
-        {
-
+        addDataModel(data_model: IDataModelOutput):void
+        {/*adauga continut (layere operationale)*/
+            for (let _feature_layer of data_model.operationalLayers.layers)
+            {
+                this.map.add(_feature_layer);
+            }
         }
     }
 
-    interface IDataModel
-    {
+    export interface IDataModel { wrap(): IDataModelOutput; }
 
-    }
-
-    interface IDataModelSettings
-    {
-
-    }
-
-    export class DataModel
+    export class DataModel implements IDataModel
     {/*acesta clasa permite crearea continutului hartii/layere operationale*/
+        _operational_layers: FeatureLayer[]= [];
+        constructor(public settings: IDataModelInput)
+        {}
+        wrap(): IDataModelOutput
+        {
+            for (let url of this.settings.operationalLayers.layers)
+            {
+                let feature_layer = new FeatureLayer({
+                    url: url
+                });
+                this._operational_layers.push(feature_layer);
+            }
+            let rezultat: IDataModelOutput = {
+                operationalLayers: {
+                    layers: this._operational_layers
+                }
+               
+            }
+            return rezultat;
+        }
 
     }
 }
+
 
 
 
@@ -83,7 +109,22 @@ let view_settings: view_model.IViewModelSettings = {
         divId:"viewDiv"
     }
 }
+
+let operational_layers: IDataModelInput = {
+    operationalLayers: {
+        layers: [
+            "https://services6.arcgis.com/Uwg97gPMK3qqaMen/arcgis/rest/services/judete_romania/FeatureServer/0"
+        ]
+    }
+}
 let view: view_model.IViewModel = new view_model.ViewModel(view_settings);
 view.wrap();
+let data: view_model.IDataModel = new view_model.DataModel(operational_layers);
+let data_model = data.wrap();
+
+view.addDataModel(data_model);
+
+
+
 
 
