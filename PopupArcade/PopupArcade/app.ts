@@ -115,10 +115,10 @@ module Esriro.ControlPanel
         { }
         wrap(): void
         {
-            /*Casting intre interfete */
+            /*Casting intre interfete IAppSettings si  IViewModelSettings*/
             let view_settings: view_model.IViewModelSettings = <view_model.IViewModelSettings>this.settings;
 
-            /*Casting intre interfete */
+            /*Casting intre interfetele IAppSettings si IDataModelInput */
             let operational_layers: IDataModelInput = <IDataModelInput>this.settings;
 
             let view: view_model.IViewModel = new view_model.ViewModel(view_settings);

@@ -66,9 +66,9 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
                     this.settings = settings;
                 }
                 Application.prototype.wrap = function () {
-                    /*Casting intre interfete */
+                    /*Casting intre interfete IAppSettings si  IViewModelSettings*/
                     var view_settings = this.settings;
-                    /*Casting intre interfete */
+                    /*Casting intre interfetele IAppSettings si IDataModelInput */
                     var operational_layers = this.settings;
                     var view = new view_model.ViewModel(view_settings);
                     view.wrap();
