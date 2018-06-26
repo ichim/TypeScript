@@ -14,13 +14,13 @@ define(["require", "exports", "esri/Map", "esri/views/MapView"], function (requi
                 }
                 ViewModel.prototype.wrap = function () {
                     this.map = new Map({
-                        basemap: "streets"
+                        basemap: this.settings.mapSettings.basemap
                     });
                     this.mapView = new MapView({
                         map: this.map,
-                        center: [26.252, 46.452],
-                        zoom: 10,
-                        container: "viewDiv"
+                        center: this.settings.mapViewSettings.center,
+                        zoom: this.settings.mapViewSettings.zoom,
+                        container: this.settings.mapViewSettings.divId
                     });
                 };
                 return ViewModel;
@@ -29,7 +29,17 @@ define(["require", "exports", "esri/Map", "esri/views/MapView"], function (requi
         })(ViewModel = Esriro.ViewModel || (Esriro.ViewModel = {}));
     })(Esriro || (Esriro = {}));
     var view_model = Esriro.ViewModel;
-    var view = new view_model.ViewModel(null);
+    var view_settings = {
+        mapSettings: {
+            basemap: "streets"
+        },
+        mapViewSettings: {
+            center: [25.256, 46.235],
+            zoom: 10,
+            divId: "viewDiv"
+        }
+    };
+    var view = new view_model.ViewModel(view_settings);
     view.wrap();
 });
 //# sourceMappingURL=app.js.map

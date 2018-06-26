@@ -33,13 +33,13 @@ module Esriro.ViewModel
         {}
         wrap(): void {
             this.map = new Map({
-                basemap:"streets"
+                basemap:this.settings.mapSettings.basemap
             });
             this.mapView = new MapView({
                 map: this.map,
-                center: [26.252, 46.452],
-                zoom: 10,
-                container:"viewDiv"
+                center: this.settings.mapViewSettings.center,
+                zoom: this.settings.mapViewSettings.zoom,
+                container:this.settings.mapViewSettings.divId
             });
 
         }
@@ -47,8 +47,21 @@ module Esriro.ViewModel
     }
 }
 
+
 import view_model = Esriro.ViewModel;
-let view: view_model.IViewModel = new view_model.ViewModel(null);
+
+let view_settings: view_model.IViewModelSettings = {
+    mapSettings: {
+        basemap:"streets"
+    },
+    mapViewSettings: {
+        center: [25.256, 46.235],
+        zoom: 10,
+        divId:"viewDiv"
+    }
+}
+
+let view: view_model.IViewModel = new view_model.ViewModel(view_settings);
 view.wrap();
 
 
