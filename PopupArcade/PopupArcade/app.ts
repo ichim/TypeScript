@@ -26,8 +26,6 @@ interface IContent
     text: string;
 }
 
-
-
 interface IOperationalLayersUrl
 {
     layers: string[];
@@ -110,7 +108,6 @@ module Esriro.ViewModel
             }
             return rezultat;
         }
-
     }
 }
 
@@ -158,7 +155,7 @@ let app_settings: application.IAppSettings = {
     },
     operationalLayers: [
             {
-                url: "",
+                url: "https://services6.arcgis.com/Uwg97gPMK3qqaMen/ArcGIS/rest/services/judete/FeatureServer/0",
             outFields: ["*"],
             /*Aici puteti seta forma si formatul popup-ului*/
             popupTemplate: { title: "Judetul {judet}", content: [{ type: "text", text: "Abreviere judet: <br> {abrev}" }]}
