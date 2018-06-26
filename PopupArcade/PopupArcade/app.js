@@ -96,6 +96,7 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
             {
                 url: "",
                 outFields: ["*"],
+                /*Aici puteti seta forma si formatul popup-ului*/
                 popupTemplate: { title: "Judetul {judet}", content: [{ type: "text", text: "Abreviere judet: <br> {abrev}" }] }
             }
         ]

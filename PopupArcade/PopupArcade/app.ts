@@ -162,6 +162,7 @@ let app_settings: application.IAppSettings = {
             {
                 url: "",
             outFields: ["*"],
+            /*Aici puteti seta forma si formatul popup-ului*/
             popupTemplate: { title: "Judetul {judet}", content: [{ type: "text", text: "Abreviere judet: <br> {abrev}" }]}
              
             }
