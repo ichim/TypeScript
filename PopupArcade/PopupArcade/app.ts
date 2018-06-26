@@ -4,14 +4,29 @@ import MapView = require("esri/views/MapView");
 import FeatureLayer = require("esri/layers/FeatureLayer");
 
 interface IDataModelInput
-{
+{/*date de intrare*/
     operationalLayers: IOperationalLayerSettings[];
 }
 interface IOperationalLayerSettings
 {
     url: string;
     outFields: string[];
+    popupTemplate: IPopupTemplate
 }
+
+interface IPopupTemplate
+{
+    title: string;
+    content: IContent[];
+}
+
+interface IContent
+{
+    type: string;
+    text: string;
+}
+
+
 
 interface IOperationalLayersUrl
 {
@@ -19,7 +34,7 @@ interface IOperationalLayersUrl
 }
 
 interface IDataModelOutput
-{
+{/*date Model Date*/
     operationalLayers: IOperationalLayersFeatureLayer;
 }
 
@@ -83,7 +98,8 @@ module Esriro.ViewModel
             {
                 let feature_layer = new FeatureLayer({
                     url: item.url,
-                    outFields:item.outFields
+                    outFields: item.outFields,
+                    popupTemplate:item.popupTemplate
                 });
                 this._operational_layers.push(feature_layer);
             }
@@ -144,8 +160,10 @@ let app_settings: application.IAppSettings = {
     },
     operationalLayers: [
             {
-                url: "https://services6.arcgis.com/Uwg97gPMK3qqaMen/ArcGIS/rest/services/judete/FeatureServer/0",
-                outFields: ["*"]
+                url: "",
+            outFields: ["*"],
+            popupTemplate: { title: "Judetul {judet}", content: [{ type: "text", text: "Abreviere judet: <br> {abrev}" }]}
+             
             }
         ]
 }

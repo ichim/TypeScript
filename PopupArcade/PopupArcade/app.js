@@ -41,7 +41,8 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
                         var item = _a[_i];
                         var feature_layer = new FeatureLayer({
                             url: item.url,
-                            outFields: item.outFields
+                            outFields: item.outFields,
+                            popupTemplate: item.popupTemplate
                         });
                         this._operational_layers.push(feature_layer);
                     }
@@ -93,8 +94,9 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
         },
         operationalLayers: [
             {
-                url: "https://services6.arcgis.com/Uwg97gPMK3qqaMen/ArcGIS/rest/services/judete/FeatureServer/0",
-                outFields: ["*"]
+                url: "",
+                outFields: ["*"],
+                popupTemplate: { title: "Judetul {judet}", content: [{ type: "text", text: "Abreviere judet: <br> {abrev}" }] }
             }
         ]
     };
