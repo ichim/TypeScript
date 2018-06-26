@@ -94,7 +94,7 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
         },
         operationalLayers: [
             {
-                url: "https://services6.arcgis.com/Uwg97gPMK3qqaMen/ArcGIS/rest/services/judete/FeatureServer/0",
+                url: "",
                 outFields: ["*"],
                 /*Aici puteti seta forma si formatul popup-ului*/
                 popupTemplate: { title: "Judetul {judet}", content: [{ type: "text", text: "Abreviere judet: <br> {abrev}" }] }
