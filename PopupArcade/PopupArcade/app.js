@@ -66,13 +66,23 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
                     this.settings = settings;
                 }
                 Application.prototype.wrap = function () {
+                    /*Casting intre interfete */
+                    var view_settings = this.settings;
+                    /*Casting intre interfete */
+                    var operational_layers = this.settings;
+                    var view = new view_model.ViewModel(view_settings);
+                    view.wrap();
+                    var data = new view_model.DataModel(operational_layers);
+                    var data_model = data.wrap();
+                    view.addDataModel(data_model);
                 };
                 return Application;
             }());
             ControlPanel.Application = Application;
         })(ControlPanel = Esriro.ControlPanel || (Esriro.ControlPanel = {}));
     })(Esriro || (Esriro = {}));
-    var view_settings = {
+    var application = Esriro.ControlPanel;
+    var app_settings = {
         mapSettings: {
             basemap: "streets"
         },
@@ -80,9 +90,7 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
             center: [25.256, 46.235],
             zoom: 8,
             divId: "viewDiv"
-        }
-    };
-    var operational_layers = {
+        },
         operationalLayers: [
             {
                 url: "https://services6.arcgis.com/Uwg97gPMK3qqaMen/ArcGIS/rest/services/judete/FeatureServer/0",
@@ -90,10 +98,7 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
             }
         ]
     };
-    var view = new view_model.ViewModel(view_settings);
-    view.wrap();
-    var data = new view_model.DataModel(operational_layers);
-    var data_model = data.wrap();
-    view.addDataModel(data_model);
+    var app = new application.Application(app_settings);
+    app.wrap();
 });
 //# sourceMappingURL=app.js.map

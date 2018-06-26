@@ -115,43 +115,44 @@ module Esriro.ControlPanel
         { }
         wrap(): void
         {
+            /*Casting intre interfete */
+            let view_settings: view_model.IViewModelSettings = <view_model.IViewModelSettings>this.settings;
+
+            /*Casting intre interfete */
+            let operational_layers: IDataModelInput = <IDataModelInput>this.settings;
+
+            let view: view_model.IViewModel = new view_model.ViewModel(view_settings);
+            view.wrap();
+            let data: view_model.IDataModel = new view_model.DataModel(operational_layers);
+            let data_model = data.wrap();
+            view.addDataModel(data_model);
 
         }
-
     }
 }
 
 
-
-
-
-
-
-
-let view_settings: view_model.IViewModelSettings = {
+import application = Esriro.ControlPanel;
+let app_settings: application.IAppSettings = {
     mapSettings: {
-        basemap:"streets"
+        basemap: "streets"
     },
     mapViewSettings: {
         center: [25.256, 46.235],
         zoom: 8,
-        divId:"viewDiv"
-    }
+        divId: "viewDiv"
+    },
+    operationalLayers: [
+            {
+                url: "https://services6.arcgis.com/Uwg97gPMK3qqaMen/ArcGIS/rest/services/judete/FeatureServer/0",
+                outFields: ["*"]
+            }
+        ]
 }
 
-let operational_layers: IDataModelInput = {
-    operationalLayers: [
-        {
-            url: "https://services6.arcgis.com/Uwg97gPMK3qqaMen/ArcGIS/rest/services/judete/FeatureServer/0",
-            outFields:["*"]
-        }
-    ]
-}
-let view: view_model.IViewModel = new view_model.ViewModel(view_settings);
-view.wrap();
-let data: view_model.IDataModel = new view_model.DataModel(operational_layers);
-let data_model = data.wrap();
-view.addDataModel(data_model);
+let app: application.IControlPanel = new application.Application(app_settings);
+app.wrap();
+
 
 
 
