@@ -1,4 +1,3 @@
-/// <reference path="@types/arcgis-js-api/index.d.ts" />
 define(["require", "exports", "esri/Map", "esri/views/MapView"], function (require, exports, Map, MapView) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -23,9 +22,17 @@ define(["require", "exports", "esri/Map", "esri/views/MapView"], function (requi
                         container: this.settings.mapViewSettings.divId
                     });
                 };
+                ViewModel.prototype.addDataModel = function (data_model) {
+                };
                 return ViewModel;
             }());
             ViewModel_1.ViewModel = ViewModel;
+            var DataModel = /** @class */ (function () {
+                function DataModel() {
+                }
+                return DataModel;
+            }());
+            ViewModel_1.DataModel = DataModel;
         })(ViewModel = Esriro.ViewModel || (Esriro.ViewModel = {}));
     })(Esriro || (Esriro = {}));
     var view_model = Esriro.ViewModel;

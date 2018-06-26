@@ -1,8 +1,13 @@
 ﻿/// <reference path="@types/arcgis-js-api/index.d.ts" />
-
 import Map = require("esri/Map");
 import MapView = require("esri/views/MapView");
+import FeatureLayer = require("esri/layers/FeatureLayer");
 
+
+interface IDataModelSettings
+{
+
+}
 
 module Esriro.ViewModel
 {/*Permite afisarea componentelor principale ale aplicatiei (Map/ViewMap) si adaugarea de surse de date (FeatureLayers)*/
@@ -10,6 +15,7 @@ module Esriro.ViewModel
     export interface IViewModel
     {
         wrap(): void;
+        addDataModel(data_model: IDataModelSettings):void;
     }
     export interface IViewModelSettings
     {
@@ -41,15 +47,32 @@ module Esriro.ViewModel
                 zoom: this.settings.mapViewSettings.zoom,
                 container:this.settings.mapViewSettings.divId
             });
+        }
+        addDataModel(data_model: IDataModelSettings):void
+        {
 
         }
+    }
+
+    interface IDataModel
+    {
+
+    }
+
+    interface IDataModelSettings
+    {
+
+    }
+
+    export class DataModel
+    {/*acesta clasa permite crearea continutului hartii/layere operationale*/
 
     }
 }
 
 
-import view_model = Esriro.ViewModel;
 
+import view_model = Esriro.ViewModel;
 let view_settings: view_model.IViewModelSettings = {
     mapSettings: {
         basemap:"streets"
@@ -60,7 +83,6 @@ let view_settings: view_model.IViewModelSettings = {
         divId:"viewDiv"
     }
 }
-
 let view: view_model.IViewModel = new view_model.ViewModel(view_settings);
 view.wrap();
 
