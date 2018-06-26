@@ -100,6 +100,34 @@ module Esriro.ViewModel
 }
 
 import view_model = Esriro.ViewModel;
+module Esriro.ControlPanel
+{/*bussiness-ul logic al aplicatiei*/
+    export interface IAppSettings extends view_model.IViewModelSettings, IDataModelInput
+    {
+    }
+    export interface IControlPanel
+    {
+        wrap(): void;
+    }
+    export class Application implements IControlPanel
+    {
+        constructor(public settings: IAppSettings)
+        { }
+        wrap(): void
+        {
+
+        }
+
+    }
+}
+
+
+
+
+
+
+
+
 let view_settings: view_model.IViewModelSettings = {
     mapSettings: {
         basemap:"streets"

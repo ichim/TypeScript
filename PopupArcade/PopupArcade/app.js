@@ -58,6 +58,20 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
         })(ViewModel = Esriro.ViewModel || (Esriro.ViewModel = {}));
     })(Esriro || (Esriro = {}));
     var view_model = Esriro.ViewModel;
+    (function (Esriro) {
+        var ControlPanel;
+        (function (ControlPanel) {
+            var Application = /** @class */ (function () {
+                function Application(settings) {
+                    this.settings = settings;
+                }
+                Application.prototype.wrap = function () {
+                };
+                return Application;
+            }());
+            ControlPanel.Application = Application;
+        })(ControlPanel = Esriro.ControlPanel || (Esriro.ControlPanel = {}));
+    })(Esriro || (Esriro = {}));
     var view_settings = {
         mapSettings: {
             basemap: "streets"
