@@ -107,7 +107,6 @@ module Esriro.ViewModel
                 operationalLayers: {
                     layers: this._operational_layers
                 }
-               
             }
             return rezultat;
         }
@@ -142,7 +141,6 @@ module Esriro.ControlPanel
             let data: view_model.IDataModel = new view_model.DataModel(operational_layers);
             let data_model = data.wrap();
             view.addDataModel(data_model);
-
         }
     }
 }
@@ -164,7 +162,6 @@ let app_settings: application.IAppSettings = {
             outFields: ["*"],
             /*Aici puteti seta forma si formatul popup-ului*/
             popupTemplate: { title: "Judetul {judet}", content: [{ type: "text", text: "Abreviere judet: <br> {abrev}" }]}
-             
             }
         ]
 }
