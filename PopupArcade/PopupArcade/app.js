@@ -174,7 +174,7 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
         },
         operationalLayers: [
             {
-                url: "",
+                url: "https://services6.arcgis.com/Uwg97gPMK3qqaMen/ArcGIS/rest/services/judete/FeatureServer/0",
                 outFields: ["judet", "abrev", "Shape_Area"],
                 field_proc: "Shape_Area",
                 suma_field_proc: 0,

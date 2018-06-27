@@ -263,7 +263,7 @@ let app_settings: application.IAppSettings = {
     },
     operationalLayers: [
             {
-            url: "", /*Aici trebuie sa adaugati un url valid pentru un FeatureLayer*/
+            url: "https://services6.arcgis.com/Uwg97gPMK3qqaMen/ArcGIS/rest/services/judete/FeatureServer/0", /*Aici trebuie sa adaugati un url valid pentru un FeatureLayer*/
             outFields: ["judet", "abrev", "Shape_Area"],
             field_proc: "Shape_Area",
             suma_field_proc:0,
