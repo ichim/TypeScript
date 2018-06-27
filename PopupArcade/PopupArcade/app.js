@@ -117,7 +117,7 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
                     view.wrap();
                     let data = new view_model.DataModel(operational_layers);
                     let data_model = data.wrap();
-                    /*Continutul popup-ului*/
+                    /*modul pentru crearea continutului popup-ului*/
                     let popup_model = new popup.PopupModel(data_model);
                     popup_model.wrap((rezultat_data_model) => {
                         /*Layerele operationale sunt adaugate la map*/
