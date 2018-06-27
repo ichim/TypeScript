@@ -61,8 +61,6 @@ interface IOperationalLayersFeatureLayer
     layers: IFeatureLayer[];
 }
 
-
-
 module Esriro.ViewModel
 {/*Permite afisarea componentelor principale ale aplicatiei (Map/ViewMap) si adaugarea de surse de date (FeatureLayers)*/
     export interface IViewModel
@@ -134,8 +132,6 @@ module Esriro.ViewModel
     }
 }
 
-
-
 import view_model = Esriro.ViewModel;
 module Esriro.Tasks.Popup
 {
@@ -164,28 +160,27 @@ module Esriro.Tasks.Popup
                     let index = 0;
                     for (let camp of layer.outFields)
                     {
-                        for (let field of layer.fields)
-                        {
-                            if (field.type !== "oid" && camp === field.name)
+                            for (let field of layer.fields)
                             {
-                                if (index === 0 && field.type === "string")
+                                if (field.type !== "oid" && camp === field.name)
                                 {
-                                    this.title = field.name + " " + "{" + field.name + "}"
-                                }
-                                else {
-                                    this.content = this.content + "<br>" + field.name + ": " + "{" + field.name + "}<br>{expression/procent} % din suprafata tarii " 
-                                }
-                             
-                                layer.popupTemplate = new PopupTemplate({
-                                    title: this.title,
-                                    content: this.content ,
-                                    expressionInfos: [{ name: 'procent', expression: "Round(($feature.Shape_Area/" + _layer.suma_field_proc.toString() + ") * 100, 1)" }]
-                                });
-                            }
+                                    if (index === 0 && field.type === "string")
+                                    {
+                                        this.title = field.name + " " + "{" + field.name + "}"
+                                    }
+                                    else {
+                                        this.content = this.content + "<br>" + field.name + ": " + "{" + field.name + "}" 
+                                    }
+                            }   
+                            index++;
                         }
-                        index++;
                     }
-                    
+                    this.content = this.content + "<br>{expression/procent} % din suprafata tarii";
+                    layer.popupTemplate = new PopupTemplate({
+                        title: this.title,
+                        content: this.content,
+                        expressionInfos: [{ name: 'procent', expression: "Round(($feature.Shape_Area/" + _layer.suma_field_proc.toString() + ") * 100, 1)" }]
+                    });
                 }
                 callback(rezultat);
             });
@@ -219,7 +214,6 @@ module Esriro.Tasks.Popup
     }
 }
 import popup = Esriro.Tasks.Popup;
-
 module Esriro.ControlPanel
 {/*bussiness-ul logic al aplicatiei*/
     export interface IAppSettings extends view_model.IViewModelSettings, IDataModelInput

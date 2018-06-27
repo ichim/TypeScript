@@ -87,17 +87,18 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
                                                 this.title = field.name + " " + "{" + field.name + "}";
                                             }
                                             else {
-                                                this.content = this.content + "<br>" + field.name + ": " + "{" + field.name + "}<br>{expression/procent} % din suprafata tarii ";
+                                                this.content = this.content + "<br>" + field.name + ": " + "{" + field.name + "}";
                                             }
-                                            layer.popupTemplate = new PopupTemplate({
-                                                title: this.title,
-                                                content: this.content,
-                                                expressionInfos: [{ name: 'procent', expression: "Round(($feature.Shape_Area/" + _layer.suma_field_proc.toString() + ") * 100, 1)" }]
-                                            });
                                         }
+                                        index++;
                                     }
-                                    index++;
                                 }
+                                this.content = this.content + "<br>{expression/procent} % din suprafata tarii";
+                                layer.popupTemplate = new PopupTemplate({
+                                    title: this.title,
+                                    content: this.content,
+                                    expressionInfos: [{ name: 'procent', expression: "Round(($feature.Shape_Area/" + _layer.suma_field_proc.toString() + ") * 100, 1)" }]
+                                });
                             }
                             callback(rezultat);
                         });
