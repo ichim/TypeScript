@@ -1,8 +1,12 @@
 ﻿/// <reference path="@types/arcgis-js-api/index.d.ts" />
+/*Module Esri*/
 import Map = require("esri/Map");
 import MapView = require("esri/views/MapView");
 import FeatureLayer = require("esri/layers/FeatureLayer");
 import Field = require("esri/layers/support/Field");
+import PopupTemplate = require("esri/PopupTemplate");
+
+
 
 interface IDataModelInput
 {/*date de intrare*/
@@ -112,66 +116,58 @@ module Esriro.ViewModel
     }
 }
 
+
+
+import view_model = Esriro.ViewModel;
 module Esriro.Tasks.Popup
 {
-    export interface IPopupSettings
-    {
-        layer: FeatureLayer;
-    }
-
-    export interface IPopupOutput
-    {
-        title: string;
-        content: string;
-    }
-
-    export class PopupModel 
-    {
-        fields: Field[] = undefined;
-        title: string = undefined;
-        content: string[] = [];
-        _content_string: string;
-        constructor(public settings: IPopupSettings)
-        {}
-        wrap(): IPopupOutput
+    export class PopupModel
+    {/*Continutul popup-ului este creat tinand seama de structura fc*/
+        title = "";
+        content = "";
+        constructor(public settings: IDataModelOutput)
+        { }
+        wrap(callback): void
         {
-            let rezultat: IPopupOutput = undefined;
-            this.fields = this.settings.layer.fields;
-            let index = 0;
-            for (let field of this.fields)
+            let promises = [];
+            let rezultat: IDataModelOutput = this.settings;
+            for (let layer of this.settings.operationalLayers.layers)
             {
-                if (field.type === "string")
-                {
-                    if (index === 0)
-                    {
-                        this.title =  "{" +   field.name + "}"
-                    }
-                    else
-                    {
-                        this._content_string = this._content_string + "<br>" + field.name + ": " +  "{" + field.name + "}";
-                    } 
-                } else if (
-                    field.type === "integer" ||
-                    field.type === "small-integer" ||
-                    field.type === "double" ||
-                    field.type === "single" ||
-                    field.type === "long")
-                {
-                    this._content_string = this._content_string + "<br>" + field.name + ": " + "{" + field.name + "}";
-                }
-                index++;
+                let promise = layer.load();
+                promises.push(promise);
             }
-            rezultat.title = this.title;
-            rezultat.content = this._content_string;
 
-
-
-            return rezultat;
+            Promise.all(promises).then((layers) => {
+                let layer:FeatureLayer = undefined;
+                for (layer of layers)
+                {
+                    let index = 0;
+                    for (let camp of layer.outFields)
+                    {
+                        for (let field of layer.fields)
+                        {
+                            if (field.type !== "oid" && camp === field.name)
+                            {
+                                if (index === 0 && field.type === "string")
+                                {
+                                    this.title = field.name + " " + "{" + field.name + "}"
+                                }
+                                else {
+                                    this.content = this.content + "<br>" + field.name + ": " + "{" + field.name + "}"
+                                }
+                                layer.popupTemplate = new PopupTemplate({ title: this.title, content: this.content });
+                            }
+                        }
+                        index++;
+                    }
+                }
+                callback(rezultat);
+            });
         }
     }
 }
+import popup = Esriro.Tasks.Popup;
 
-import view_model = Esriro.ViewModel;
 module Esriro.ControlPanel
 {/*bussiness-ul logic al aplicatiei*/
     export interface IAppSettings extends view_model.IViewModelSettings, IDataModelInput
@@ -189,29 +185,22 @@ module Esriro.ControlPanel
         {
             /*Casting intre interfete IAppSettings si  IViewModelSettings*/
             let view_settings: view_model.IViewModelSettings = <view_model.IViewModelSettings>this.settings;
-
             /*Casting intre interfetele IAppSettings si IDataModelInput */
             let operational_layers: IDataModelInput = <IDataModelInput>this.settings;
-
-            
-
             let view: view_model.IViewModel = new view_model.ViewModel(view_settings);
             view.wrap();
             let data: view_model.IDataModel = new view_model.DataModel(operational_layers);
             let data_model = data.wrap();
-            view.addDataModel(data_model);
+            /*Continutul popup-ului*/
+            let popup_model: popup.PopupModel = new popup.PopupModel(data_model);
+            popup_model.wrap((rezultat_data_model) => { 
+                /*Layerele operationale sunt adaugate la map*/
+                view.addDataModel(rezultat_data_model);
+            });
+           
         }
     }
 }
-
-
-import application = Esriro.ControlPanel;
-import popup = Esriro.Tasks.Popup;
-
-
-
-
-
 
 let app_settings: application.IAppSettings = {
     mapSettings: {
@@ -226,15 +215,17 @@ let app_settings: application.IAppSettings = {
             {
                 url: "https://services6.arcgis.com/Uwg97gPMK3qqaMen/ArcGIS/rest/services/judete/FeatureServer/0",
             outFields: ["judet", "abrev", "Shape_Area"],
-            /*Aici puteti seta forma si formatul popup-ului*/
-            popupTemplate: { title: "Judetul {judet}", content: [{ type: "text", text: "Abreviere judet: <br> {abrev}" }]}
+            popupTemplate: { title: "}", content: []}
             }
         ]
 }
 
+import application = Esriro.ControlPanel;
 let app: application.IControlPanel = new application.Application(app_settings);
 app.wrap();
 
+
+/*Modulele aplicatiei TypeScript*/
 
 
 
