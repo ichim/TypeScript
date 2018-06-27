@@ -1,0 +1,7 @@
+In aplicatie au fost folosite elemente de programare specifice programarii orientate pe obiecte: 
+  - utilizarea claselor si interfetelo;
+  - casting pe interfete;
+  - extinderea interfetelor;
+De asemenea, variabilele si functiile au fost declarate utilzand tipul de variabila stocata sau tipul de variabila returnata.
+Au mai fost utilizate elemente specifice programarii dojo: promise/promse all. Pentru a putea utiliza Promise/All in TypeScript este neceasar ca proiectul se accepte ECMA Script versiunea 6
+
