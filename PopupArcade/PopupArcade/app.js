@@ -149,5 +149,4 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
     let app = new application.Application(app_settings);
     app.wrap();
 });
-/*Modulele aplicatiei TypeScript*/
 //# sourceMappingURL=app.js.map

@@ -225,7 +225,7 @@ let app: application.IControlPanel = new application.Application(app_settings);
 app.wrap();
 
 
-/*Modulele aplicatiei TypeScript*/
+
 
 
 
