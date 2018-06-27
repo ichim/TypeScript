@@ -213,7 +213,7 @@ let app_settings: application.IAppSettings = {
     },
     operationalLayers: [
             {
-                url: "https://services6.arcgis.com/Uwg97gPMK3qqaMen/ArcGIS/rest/services/judete/FeatureServer/0",
+                url: "",
             outFields: ["judet", "abrev", "Shape_Area"],
             popupTemplate: { title: "}", content: []}
             }
