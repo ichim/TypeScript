@@ -5,20 +5,24 @@ import MapView = require("esri/views/MapView");
 import FeatureLayer = require("esri/layers/FeatureLayer");
 import Field = require("esri/layers/support/Field");
 import PopupTemplate = require("esri/PopupTemplate");
+import SummaryStatistics = require("esri/renderers/smartMapping/statistics/summaryStatistics");
 
 
-
+/*date de intrare*/
 interface IDataModelInput
-{/*date de intrare*/
+{
     operationalLayers: IOperationalLayerSettings[];
 }
-interface IOperationalLayerSettings
+interface IOperationalLayerSettings extends IFeatureLayerExtending
 {
     url: string;
     outFields: string[];
-    popupTemplate: IPopupTemplate
+    popupTemplate: IPopupTemplate;
+   
 }
+/*date de intrare*/
 
+/*Type pentru PopupTemplate*/
 interface IPopupTemplate
 {
     title: string;
@@ -30,6 +34,7 @@ interface IContent
     type: string;
     text: string;
 }
+/*Type pentru PopupTemplate*/
 
 interface IOperationalLayersUrl
 {
@@ -41,10 +46,22 @@ interface IDataModelOutput
     operationalLayers: IOperationalLayersFeatureLayer;
 }
 
+interface IFeatureLayerExtending
+{
+    field_proc: string; 
+    suma_field_proc: number;
+}
+
+interface IFeatureLayer extends FeatureLayer, IFeatureLayerExtending  {
+  
+}
+
 interface IOperationalLayersFeatureLayer
 {
-    layers: FeatureLayer[];
+    layers: IFeatureLayer[];
 }
+
+
 
 module Esriro.ViewModel
 {/*Permite afisarea componentelor principale ale aplicatiei (Map/ViewMap) si adaugarea de surse de date (FeatureLayers)*/
@@ -92,18 +109,19 @@ module Esriro.ViewModel
     export interface IDataModel { wrap(): IDataModelOutput; }
     export class DataModel implements IDataModel
     {/*acesta clasa permite crearea continutului hartii/layere operationale*/
-        _operational_layers: FeatureLayer[]= [];
+        _operational_layers: IFeatureLayer[]= [];
         constructor(public settings: IDataModelInput)
         {}
         wrap(): IDataModelOutput
         {
             for (let item of this.settings.operationalLayers)
             {
-                let feature_layer = new FeatureLayer({
+                let feature_layer = <IFeatureLayer> new FeatureLayer({
                     url: item.url,
                     outFields: item.outFields,
                     popupTemplate:item.popupTemplate
                 });
+                feature_layer.field_proc = item.field_proc;
                 this._operational_layers.push(feature_layer);
             }
             let rezultat: IDataModelOutput = {
@@ -141,6 +159,8 @@ module Esriro.Tasks.Popup
                 let layer:FeatureLayer = undefined;
                 for (layer of layers)
                 {
+                    let _layer: IFeatureLayer = <IFeatureLayer>layer;
+                    console.log("_layer.suma_field_proc",_layer.suma_field_proc);
                     let index = 0;
                     for (let camp of layer.outFields)
                     {
@@ -153,17 +173,49 @@ module Esriro.Tasks.Popup
                                     this.title = field.name + " " + "{" + field.name + "}"
                                 }
                                 else {
-                                    this.content = this.content + "<br>" + field.name + ": " + "{" + field.name + "}"
+                                    this.content = this.content + "<br>" + field.name + ": " + "{" + field.name + "}<br>{expression/procent} % din suprafata tarii " 
                                 }
-                                layer.popupTemplate = new PopupTemplate({ title: this.title, content: this.content });
+                             
+                                layer.popupTemplate = new PopupTemplate({
+                                    title: this.title,
+                                    content: this.content ,
+                                    expressionInfos: [{ name: 'procent', expression: "Round(($feature.Shape_Area/" + _layer.suma_field_proc.toString() + ") * 100, 1)" }]
+                                });
                             }
                         }
                         index++;
                     }
+                    
                 }
                 callback(rezultat);
             });
         }
+        suma(callback): void {
+            /*Aceasta functie calculeaza cat reprezinta suprafata fiecarui judet raportat la suprafata intregii tari
+            Pentru calcule s-a folosit ArcGIS Arcade*/
+            let layer: IFeatureLayer = undefined;
+            let promises = [];
+            for (layer of  this.settings.operationalLayers.layers)
+            {
+                let feature_layer = <IFeatureLayer>layer;
+                promises.push(SummaryStatistics({
+                    layer: layer,
+                    field: feature_layer.field_proc
+                }));
+            }
+            Promise.all(promises).then((rezultate) => {
+                let index: number = 0;
+                for (let rezultat of rezultate) {
+                    console.log("rezultat", rezultat);
+                    let _layer_ = this.settings.operationalLayers.layers[index];
+                    _layer_.suma_field_proc = rezultat.sum;
+                    
+                    index++;
+                }
+                callback(this.settings);
+            });
+        }
+       
     }
 }
 import popup = Esriro.Tasks.Popup;
@@ -193,9 +245,13 @@ module Esriro.ControlPanel
             let data_model = data.wrap();
             /*modul pentru crearea continutului popup-ului*/
             let popup_model: popup.PopupModel = new popup.PopupModel(data_model);
-            popup_model.wrap((rezultat_data_model) => { 
-                /*Layerele operationale sunt adaugate la map*/
-                view.addDataModel(rezultat_data_model);
+            popup_model.suma((statistical_data_model) => { 
+                popup_model = new popup.PopupModel(statistical_data_model);
+                popup_model.wrap((rezultat_data_model) => { 
+                    /*Layerele operationale sunt adaugate la map*/
+                    console.log("rezultat_data_model",rezultat_data_model);
+                    view.addDataModel(rezultat_data_model);
+                    });
             });
            
         }
@@ -213,8 +269,10 @@ let app_settings: application.IAppSettings = {
     },
     operationalLayers: [
             {
-                url: "",
+            url: "", /*Aici trebuie sa adaugati un url valid pentru un FeatureLayer*/
             outFields: ["judet", "abrev", "Shape_Area"],
+            field_proc: "Shape_Area",
+            suma_field_proc:0,
             popupTemplate: { title: "}", content: []}
             }
         ]

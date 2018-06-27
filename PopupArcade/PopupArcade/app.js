@@ -1,4 +1,4 @@
-define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/FeatureLayer", "esri/PopupTemplate"], function (require, exports, Map, MapView, FeatureLayer, PopupTemplate) {
+define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/FeatureLayer", "esri/PopupTemplate", "esri/renderers/smartMapping/statistics/summaryStatistics"], function (require, exports, Map, MapView, FeatureLayer, PopupTemplate, SummaryStatistics) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var Esriro;
@@ -41,6 +41,7 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
                             outFields: item.outFields,
                             popupTemplate: item.popupTemplate
                         });
+                        feature_layer.field_proc = item.field_proc;
                         this._operational_layers.push(feature_layer);
                     }
                     let rezultat = {
@@ -76,6 +77,8 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
                         Promise.all(promises).then((layers) => {
                             let layer = undefined;
                             for (layer of layers) {
+                                let _layer = layer;
+                                console.log("_layer.suma_field_proc", _layer.suma_field_proc);
                                 let index = 0;
                                 for (let camp of layer.outFields) {
                                     for (let field of layer.fields) {
@@ -84,15 +87,42 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
                                                 this.title = field.name + " " + "{" + field.name + "}";
                                             }
                                             else {
-                                                this.content = this.content + "<br>" + field.name + ": " + "{" + field.name + "}";
+                                                this.content = this.content + "<br>" + field.name + ": " + "{" + field.name + "}<br>{expression/procent} % din suprafata tarii ";
                                             }
-                                            layer.popupTemplate = new PopupTemplate({ title: this.title, content: this.content });
+                                            layer.popupTemplate = new PopupTemplate({
+                                                title: this.title,
+                                                content: this.content,
+                                                expressionInfos: [{ name: 'procent', expression: "Round(($feature.Shape_Area/" + _layer.suma_field_proc.toString() + ") * 100, 1)" }]
+                                            });
                                         }
                                     }
                                     index++;
                                 }
                             }
                             callback(rezultat);
+                        });
+                    }
+                    suma(callback) {
+                        /*Aceasta functie calculeaza cat reprezinta suprafata fiecarui judet raportat la suprafata intregii tari
+                        Pentru calcule s-a folosit ArcGIS Arcade*/
+                        let layer = undefined;
+                        let promises = [];
+                        for (layer of this.settings.operationalLayers.layers) {
+                            let feature_layer = layer;
+                            promises.push(SummaryStatistics({
+                                layer: layer,
+                                field: feature_layer.field_proc
+                            }));
+                        }
+                        Promise.all(promises).then((rezultate) => {
+                            let index = 0;
+                            for (let rezultat of rezultate) {
+                                console.log("rezultat", rezultat);
+                                let _layer_ = this.settings.operationalLayers.layers[index];
+                                _layer_.suma_field_proc = rezultat.sum;
+                                index++;
+                            }
+                            callback(this.settings);
                         });
                     }
                 }
@@ -119,9 +149,13 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
                     let data_model = data.wrap();
                     /*modul pentru crearea continutului popup-ului*/
                     let popup_model = new popup.PopupModel(data_model);
-                    popup_model.wrap((rezultat_data_model) => {
-                        /*Layerele operationale sunt adaugate la map*/
-                        view.addDataModel(rezultat_data_model);
+                    popup_model.suma((statistical_data_model) => {
+                        popup_model = new popup.PopupModel(statistical_data_model);
+                        popup_model.wrap((rezultat_data_model) => {
+                            /*Layerele operationale sunt adaugate la map*/
+                            console.log("rezultat_data_model", rezultat_data_model);
+                            view.addDataModel(rezultat_data_model);
+                        });
                     });
                 }
             }
@@ -141,6 +175,8 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
             {
                 url: "",
                 outFields: ["judet", "abrev", "Shape_Area"],
+                field_proc: "Shape_Area",
+                suma_field_proc: 0,
                 popupTemplate: { title: "}", content: [] }
             }
         ]
