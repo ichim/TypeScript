@@ -2,6 +2,7 @@
 define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/FeatureLayer"], function (require, exports, Map, MapView, FeatureLayer) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
+    var id_div_editare = "";
     var Esriro;
     (function (Esriro) {
         var ViewModel;
@@ -40,11 +41,14 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
                     this.map.add(layer);
                 };
                 ViewModel.prototype.creteEditForm = function (fields, feature) {
-                    var id = "";
+                    console.log('feature', feature['attributes']);
+                    var id = "div_editare_" + Math.round(Math.random() * 1000).toString();
+                    ;
                     var bara = document.createElement('div');
                     bara.style.height = "20px";
                     bara.style.backgroundColor = "#F4F6F6";
                     var div = document.createElement("div");
+                    div.id = id;
                     div.style.height = "200px";
                     div.style.width = "260px";
                     div.style.backgroundColor = "white";
@@ -54,19 +58,14 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
                     var attribute_helper = new helper.AttributeHelper(table, "200px");
                     for (var _i = 0, fields_1 = fields; _i < fields_1.length; _i++) {
                         var field = fields_1[_i];
-                        attribute_helper.add(field, "Valoare");
+                        var valoare = feature['attributes'][field.name];
+                        console.log(valoare);
+                        attribute_helper.add(field, valoare);
                     }
-                    //let row = table.insertRow(0);
-                    //let cell1 = row.insertCell(0);
-                    //cell1.style.width = "100px";
-                    //let cell2 = row.insertCell(1);
-                    //cell2.style.width = "100px";
-                    //let input2 = document.createElement("input");
-                    //input2.style.width = "100px";
-                    //cell1.innerHTML = "Camp";
-                    //cell2.appendChild(input2);
                     div.appendChild(table);
+                    this.mapView.ui.remove(id_div_editare);
                     this.mapView.ui.add(div, "top-right");
+                    id_div_editare = id;
                     console.log(table.style.width);
                     return id;
                 };
@@ -109,7 +108,9 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
                     var cellValue = row.insertCell(1);
                     var value = document.createElement("input");
                     value.style.width = width.toString() + "px";
-                    value.value = attributeValue.toString();
+                    if (attributeValue !== null) {
+                        value.value = attributeValue.toString();
+                    }
                     cellValue.appendChild(value);
                     console.log("Adaugat", width);
                 };

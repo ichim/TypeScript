@@ -5,6 +5,8 @@ import MapView = require("esri/views/MapView");
 import FeatureLayer = require("esri/layers/FeatureLayer");
 import Field = require("esri/layers/support/Field");
 
+let id_div_editare:string = "";
+
 module Esriro.ViewModel
 {
     export interface IViewModel
@@ -68,13 +70,15 @@ module Esriro.ViewModel
         }
         creteEditForm(fields:Field[], feature:object): string
         {
-            let id = "";
+            console.log('feature',feature['attributes']);
+            let id = "div_editare_" + Math.round(Math.random() * 1000).toString();;
 
             let bara = document.createElement('div');
             bara.style.height = "20px";
             bara.style.backgroundColor = "#F4F6F6";
 
             let div = document.createElement("div");
+            div.id = id;
             div.style.height = "200px";
             div.style.width = "260px";
             div.style.backgroundColor = "white";
@@ -86,27 +90,19 @@ module Esriro.ViewModel
 
             for (let field of fields)
             {
-                attribute_helper.add(field, "Valoare");
+                let valoare: any = feature['attributes'][field.name];
+                console.log(valoare);
+                attribute_helper.add(field, valoare);
             }
 
-            
-            //let row = table.insertRow(0);
-            //let cell1 = row.insertCell(0);
-            //cell1.style.width = "100px";
 
-            //let cell2 = row.insertCell(1);
-            //cell2.style.width = "100px";
-            //let input2 = document.createElement("input");
-            //input2.style.width = "100px";
-
-            //cell1.innerHTML = "Camp";
-            //cell2.appendChild(input2);
            div.appendChild(table);
 
 
 
-
+            this.mapView.ui.remove(id_div_editare);
             this.mapView.ui.add(div, "top-right");
+            id_div_editare = id;
             console.log(table.style.width);
           
 
@@ -134,7 +130,7 @@ module Esriro.Helper
     {
         constructor(public table:HTMLTableElement, public width:string)
         { }
-        add(field: Field, attributeValue: number | string): void {
+        add(field: Field, attributeValue: any): void {
             let color: string = field.editable?"black":"gray";
          
 
@@ -147,7 +143,11 @@ module Esriro.Helper
             let cellValue = row.insertCell(1);
             let value = document.createElement("input");
             value.style.width = width.toString() + "px";
-            value.value = attributeValue.toString();
+            if (attributeValue !== null)
+            {
+                value.value = attributeValue.toString();
+            }
+           
             cellValue.appendChild(value);
 
             console.log("Adaugat", width);
