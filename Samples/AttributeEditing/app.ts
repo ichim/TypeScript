@@ -1,28 +1,101 @@
-﻿class Greeter {
-    element: HTMLElement;
-    span: HTMLElement;
-    timerToken: number;
+﻿/// <reference path="@types/arcgis-js-api/index.d.ts" />
 
-    constructor(element: HTMLElement) {
-        this.element = element;
-        this.element.innerHTML += "The time is: ";
-        this.span = document.createElement('span');
-        this.element.appendChild(this.span);
-        this.span.innerText = new Date().toUTCString();
+import Map = require("esri/Map");
+import MapView = require("esri/views/MapView");
+import FeatureLayer = require("esri/layers/FeatureLayer");
+import Field = require("esri/layers/support/Field");
+
+module Esriro.ViewModel
+{
+    export interface IViewModel
+    {
+        wrap(): void;
+        add(layer: FeatureLayer): void;
     }
-
-    start() {
-        this.timerToken = setInterval(() => this.span.innerHTML = new Date().toUTCString(), 500);
+    export interface IViewModelSettings
+    {
+        map: IMapSettings;
+        mapView: IMapViewSettings;
+        helper: helper.Helper;
     }
-
-    stop() {
-        clearTimeout(this.timerToken);
+    export interface IMapSettings
+    {
+        basemap: string;
     }
+    export interface IMapViewSettings
+    {
+        center: number[];
+        zoom: number;
+        container: string;
+    }
+    export class ViewModel implements IViewModel
+    {
+        map:Map = undefined;
+        mapView:MapView = undefined;
+        constructor(public settings: IViewModelSettings)
+        { }
+        wrap(): void {
+            this.map = new Map({
+                basemap:this.settings.map.basemap
+            });
+            this.mapView = new MapView({
+                map: this.map,
+                container: this.settings.mapView.container,
+                center: this.settings.mapView.center,
+                zoom:this.settings.mapView.zoom
+            });
 
+            this.settings.helper.fields((fields) => {
+                console.log(fields);
+            });
+        }
+        add(layer: FeatureLayer)
+        {
+            this.map.add(layer);
+        }
+    }
 }
 
-window.onload = () => {
-    var el = document.getElementById('content');
-    var greeter = new Greeter(el);
-    greeter.start();
+module Esriro.Helper
+{
+    export class Helper
+    {
+        constructor(public feature_layer: FeatureLayer)
+        {      }
+         fields(callback):void
+         {
+             this.feature_layer.load().then((layer) => { 
+             let fields: Field[] = [];
+                 fields = this.feature_layer.fields;
+
+                 callback(fields);
+             });
+        }
+    }
+}
+
+
+
+
+import view_model = Esriro.ViewModel;
+import helper = Esriro.Helper;
+let featureLayer = new FeatureLayer({
+    url:"https://services6.arcgis.com/Uwg97gPMK3qqaMen/arcgis/rest/services/HSSEInicdents/FeatureServer/0"
+})
+
+
+
+let view_model_settings: view_model.IViewModelSettings = {
+    map: { basemap: "streets" },
+    mapView: {
+        center: [26.52, 45.68],
+        zoom: 8,
+        container:"viewDiv"
+    },
+    helper: new helper.Helper(featureLayer)
+
 };
+
+let view_app: view_model.IViewModel = new view_model.ViewModel(view_model_settings);
+view_app.wrap();
+view_app.add(featureLayer);
