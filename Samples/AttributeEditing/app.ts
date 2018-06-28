@@ -5,7 +5,15 @@ import MapView = require("esri/views/MapView");
 import FeatureLayer = require("esri/layers/FeatureLayer");
 import Field = require("esri/layers/support/Field");
 
-let id_div_editare:string = "";
+let id_div_editare: string = "";
+
+
+interface IField
+{
+    field: Field;
+    value: number | string | Date;
+    retrned_id: string;
+}
 
 module Esriro.ViewModel
 {
@@ -13,7 +21,8 @@ module Esriro.ViewModel
     {
         wrap(): void;
         add(layer: FeatureLayer): void;
-        creteEditForm(fields: Field[], feature:object): string;
+        get(type: string): any;
+        //creteEditForm(fields: Field[], feature:object): string;
     }
     export interface IViewModelSettings
     {
@@ -47,68 +56,99 @@ module Esriro.ViewModel
                 center: this.settings.mapView.center,
                 zoom:this.settings.mapView.zoom
             });
-
-            this.mapView.on("click", (event) => {
-                this.mapView.hitTest(event).then((response) => {
-                    if (response.results.length > 0 && response.results[0].graphic)
-                    {
-                        var feature = response.results[0].graphic;
-                        this.settings.helper.fields((fields) => {
-                            console.log(fields);
-                            view_app.creteEditForm(fields, feature);
-                        });
-                        console.log(feature);
-                    }
-                });
-            });
-
-          
         }
         add(layer: FeatureLayer)
         {
             this.map.add(layer);
         }
-        creteEditForm(fields:Field[], feature:object): string
+        get(type: string): any
         {
-            console.log('feature',feature['attributes']);
-            let id = "div_editare_" + Math.round(Math.random() * 1000).toString();;
+            switch (type)
+            {
+                case "map":
+                    return this.map;
+                    break;
+                case "mapView":
+                    return this.mapView;
+                    break;
+            }
+        }
+    }
+}
 
-            let bara = document.createElement('div');
-            bara.style.height = "20px";
-            bara.style.backgroundColor = "#F4F6F6";
+module Esriro.AttributesModel
+{
+    export interface IAttributesModelSettings
+    {
+        map: Map;
+        mapView: MapView;
+        helper: helper.Helper;
+    }
+    export class AttributesModel
+    {
+        map: Map = undefined;
+        mapView: MapView = undefined;
+        constructor(public settings: IAttributesModelSettings) {  }
+        creteEditForm(fields: Field[], feature: object): string {
+            let id = "div_editare_" + Math.round(Math.random() * 1000).toString();;
+            let parinte = document.createElement("div");
+            parinte.style.height = "200px";
+            parinte.style.width = "260px";
+            parinte.id = id;
+            let bara1 = document.createElement('div');
+            bara1.style.height = "20px";
+            bara1.style.backgroundColor = "#73C8C7";
+            let labelOid = document.createElement("label");
+            labelOid.innerHTML = feature['layer']['objectIdField'] + ": " + feature['attributes'][feature['layer']['objectIdField']].toString();
+            bara1.appendChild(labelOid);
+            let bara2 = document.createElement('div');
+            bara2.style.height = "22px";
+            bara2.style.backgroundColor = "#73C8C7";
+            bara2.style.textAlign = 'right';
+
+            let applyButton = document.createElement("button");
+            applyButton.innerHTML = "OK";
+            bara2.appendChild(applyButton);
 
             let div = document.createElement("div");
-            div.id = id;
             div.style.height = "200px";
             div.style.width = "260px";
             div.style.backgroundColor = "white";
-            div.appendChild(bara);
-            
+            parinte.appendChild(bara1);
+            parinte.appendChild(div);
+            parinte.appendChild(bara2);
             let table = document.createElement("table");
             div.style.overflowY = 'auto';
             let attribute_helper = new helper.AttributeHelper(table, "200px");
-
-            for (let field of fields)
-            {
+            applyButton.onclick = function () {
+                attribute_helper.change_attributes(attribute_helper.get('data_update'));
+            }
+            for (let field of fields) {
                 let valoare: any = feature['attributes'][field.name];
-                console.log(valoare);
                 attribute_helper.add(field, valoare);
             }
-
-
-           div.appendChild(table);
-
-
-
+            div.appendChild(table);
             this.mapView.ui.remove(id_div_editare);
-            this.mapView.ui.add(div, "top-right");
+            this.mapView.ui.add(parinte, "top-right");
             id_div_editare = id;
-            console.log(table.style.width);
-          
-
             return id;
         }
-    }
+        wrap(): void
+        {
+            this.map = this.settings.map; this.mapView = this.settings.mapView;
+            this.mapView.on("click", (event) => {
+                this.mapView.hitTest(event).then((response) => {
+                    if (response.results.length > 0 && response.results[0].graphic) {
+                        var feature = response.results[0].graphic;
+                        this.settings.helper.fields((fields) => {
+                            this.creteEditForm(fields, feature);
+                        });
+
+                    }
+                });
+            });
+        }
+    } 
 }
 
 module Esriro.Helper
@@ -128,12 +168,16 @@ module Esriro.Helper
     }
     export class AttributeHelper
     {
+        update_features: IField[] = [];
+        updated_features: IField[] = [];
         constructor(public table:HTMLTableElement, public width:string)
         { }
-        add(field: Field, attributeValue: any): void {
-            let color: string = field.editable?"black":"gray";
-         
+        
+        add(field: Field, attributeValue: number | string | Date): void {
 
+           
+
+            let color: string = field.editable?"black":"gray";
             let width:number = Number( this.width.replace(/[^\d\.\-]/g, ''))/2;
             let row = this.table.insertRow(0);
             let header = row.insertCell(0);
@@ -142,21 +186,54 @@ module Esriro.Helper
             header.style.color = color;
             let cellValue = row.insertCell(1);
             let value = document.createElement("input");
-            value.style.width = width.toString() + "px";
-            if (attributeValue !== null)
-            {
-                value.value = attributeValue.toString();
+            value.id = field.name + Math.round(Math.random() * 1000).toString();
+            let valoare_curenta: IField = {
+                field: field,
+                value: attributeValue,
+                retrned_id: value.id
             }
-           
+            this.update_features.push(valoare_curenta);
+            if (field.type === "small-integer" ||
+                field.type === "integer" ||
+                field.type === "single" ||
+                field.type === "double" ||
+                field.type === "long")
+            {
+                value.type = "number"
+                if (attributeValue !== null) {
+                    value.value = <string> attributeValue;
+                }
+            } else if (field.type ==="string") {
+                value.type = "text";
+                if (attributeValue !== null) {
+                    value.value = <string>  attributeValue;
+                }
+            } else if (field.type === "date")
+            {
+                value.type = "date";
+                if (attributeValue !== null) {
+                    
+                    value.value = new Date( <number> attributeValue).toDateString();
+                }
+            }
+            value.style.width = width.toString() + "px";
             cellValue.appendChild(value);
-
-            console.log("Adaugat", width);
         }
-
-
-
-
-
+        get(type: string): IField[]
+        {
+            switch (type)
+            {
+                case "data_update":
+                    return this.update_features;
+                    break;
+            }
+        }
+        change_attributes(data:IField[]): void {
+            for (let item of data)
+            {
+                console.log(item.field.name, (document.getElementById(item.retrned_id) as HTMLInputElement).value );
+            }
+        }
     }
 }
 
@@ -186,4 +263,14 @@ let view_model_settings: view_model.IViewModelSettings = {
 let view_app: view_model.IViewModel = new view_model.ViewModel(view_model_settings);
 view_app.wrap();
 view_app.add(featureLayer);
+import attribute_model = Esriro.AttributesModel;
+let attribute_app_settings: attribute_model.IAttributesModelSettings = {
+    map: view_app.get("map"),
+    mapView: view_app.get("mapView"),
+    helper: new helper.Helper(featureLayer)
+}
+let attribute_app: attribute_model.AttributesModel = new attribute_model.AttributesModel(attribute_app_settings);
+attribute_app.wrap();
+
+
 
