@@ -52,6 +52,7 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
                     this.mapView = undefined;
                 }
                 AttributesModel.prototype.creteEditForm = function (fields, feature) {
+                    /*Creaza form-ul in care se vor afisa datele atribut si cu care se vor modifica*/
                     var id = "div_editare_" + Math.round(Math.random() * 1000).toString();
                     ;
                     var parinte = document.createElement("div");
@@ -149,34 +150,42 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
                     header.innerHTML = field.alias;
                     header.style.color = color;
                     var cellValue = row.insertCell(1);
+                    var domain = field.domain;
                     var value = document.createElement("input");
-                    value.id = field.name + Math.round(Math.random() * 1000).toString();
+                    console.log(value instanceof HTMLInputElement);
+                    if (domain !== null && domain.type === "coded-value") {
+                        console.log(field.name);
+                        var value_1 = document.createElement("select");
+                        value_1.id = field.name + Math.round(Math.random() * 1000).toString();
+                    }
                     var valoare_curenta = {
                         field: field,
                         value: attributeValue,
                         retrned_id: value.id
                     };
                     this.update_features.push(valoare_curenta);
-                    if (field.type === "small-integer" ||
-                        field.type === "integer" ||
-                        field.type === "single" ||
-                        field.type === "double" ||
-                        field.type === "long") {
-                        value.type = "number";
-                        if (attributeValue !== null) {
-                            value.value = attributeValue;
+                    if (value instanceof HTMLInputElement) {
+                        if (field.type === "small-integer" ||
+                            field.type === "integer" ||
+                            field.type === "single" ||
+                            field.type === "double" ||
+                            field.type === "long") {
+                            value.type = "number";
+                            if (attributeValue !== null) {
+                                value.value = attributeValue;
+                            }
                         }
-                    }
-                    else if (field.type === "string") {
-                        value.type = "text";
-                        if (attributeValue !== null) {
-                            value.value = attributeValue;
+                        else if (field.type === "string") {
+                            value.type = "text";
+                            if (attributeValue !== null) {
+                                value.value = attributeValue;
+                            }
                         }
-                    }
-                    else if (field.type === "date") {
-                        value.type = "date";
-                        if (attributeValue !== null) {
-                            value.value = new Date(attributeValue).toDateString();
+                        else if (field.type === "date") {
+                            value.type = "date";
+                            if (attributeValue !== null) {
+                                value.value = new Date(attributeValue).toDateString();
+                            }
                         }
                     }
                     value.style.width = width.toString() + "px";
@@ -190,6 +199,7 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
                     }
                 };
                 AttributeHelper.prototype.change_attributes = function (data) {
+                    /*Modificarea atributelor*/
                     for (var _i = 0, data_1 = data; _i < data_1.length; _i++) {
                         var item = data_1[_i];
                         console.log(item.field.name, document.getElementById(item.retrned_id).value);
@@ -203,7 +213,7 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
     var view_model = Esriro.ViewModel;
     var helper = Esriro.Helper;
     var featureLayer = new FeatureLayer({
-        url: "https://services6.arcgis.com/Uwg97gPMK3qqaMen/arcgis/rest/services/HSSEInicdents/FeatureServer/0",
+        url: "",
         outFields: ["*"]
     });
     var view_model_settings = {

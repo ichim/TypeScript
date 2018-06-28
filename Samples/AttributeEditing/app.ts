@@ -4,6 +4,7 @@ import Map = require("esri/Map");
 import MapView = require("esri/views/MapView");
 import FeatureLayer = require("esri/layers/FeatureLayer");
 import Field = require("esri/layers/support/Field");
+import Domain = require("esri/layers/support/Domain");
 
 let id_div_editare: string = "";
 
@@ -90,6 +91,7 @@ module Esriro.AttributesModel
         mapView: MapView = undefined;
         constructor(public settings: IAttributesModelSettings) {  }
         creteEditForm(fields: Field[], feature: object): string {
+            /*Creaza form-ul in care se vor afisa datele atribut si cu care se vor modifica*/
             let id = "div_editare_" + Math.round(Math.random() * 1000).toString();;
             let parinte = document.createElement("div");
             parinte.style.height = "200px";
@@ -143,7 +145,6 @@ module Esriro.AttributesModel
                         this.settings.helper.fields((fields) => {
                             this.creteEditForm(fields, feature);
                         });
-
                     }
                 });
             });
@@ -172,11 +173,7 @@ module Esriro.Helper
         updated_features: IField[] = [];
         constructor(public table:HTMLTableElement, public width:string)
         { }
-        
         add(field: Field, attributeValue: number | string | Date): void {
-
-           
-
             let color: string = field.editable?"black":"gray";
             let width:number = Number( this.width.replace(/[^\d\.\-]/g, ''))/2;
             let row = this.table.insertRow(0);
@@ -185,37 +182,51 @@ module Esriro.Helper
             header.innerHTML = field.alias;
             header.style.color = color;
             let cellValue = row.insertCell(1);
-            let value = document.createElement("input");
-            value.id = field.name + Math.round(Math.random() * 1000).toString();
+
+            let domain = field.domain;
+            let value:HTMLInputElement = document.createElement("input");
+            console.log(value instanceof HTMLInputElement );
+            if (domain !== null && domain.type ==="coded-value"  )
+            {
+                console.log(field.name);
+                let value:HTMLSelectElement = document.createElement("select");
+                value.id = field.name + Math.round(Math.random() * 1000).toString();
+                
+                
+            } 
+
             let valoare_curenta: IField = {
                 field: field,
                 value: attributeValue,
                 retrned_id: value.id
             }
             this.update_features.push(valoare_curenta);
-            if (field.type === "small-integer" ||
-                field.type === "integer" ||
-                field.type === "single" ||
-                field.type === "double" ||
-                field.type === "long")
+
+            if (value instanceof HTMLInputElement)
             {
-                value.type = "number"
-                if (attributeValue !== null) {
-                    value.value = <string> attributeValue;
+                if (field.type === "small-integer" ||
+                    field.type === "integer" ||
+                    field.type === "single" ||
+                    field.type === "double" ||
+                    field.type === "long") {
+                    value.type = "number"
+                    if (attributeValue !== null) {
+                        value.value = <string>attributeValue;
+                    }
+                } else if (field.type === "string") {
+                    value.type = "text";
+                    if (attributeValue !== null) {
+                        value.value = <string>attributeValue;
+                    }
+                } else if (field.type === "date") {
+                    value.type = "date";
+                    if (attributeValue !== null) {
+
+                        value.value = new Date(<number>attributeValue).toDateString();
+                    }
                 }
-            } else if (field.type ==="string") {
-                value.type = "text";
-                if (attributeValue !== null) {
-                    value.value = <string>  attributeValue;
-                }
-            } else if (field.type === "date")
-            {
-                value.type = "date";
-                if (attributeValue !== null) {
-                    
-                    value.value = new Date( <number> attributeValue).toDateString();
-                }
-            }
+            } 
+ 
             value.style.width = width.toString() + "px";
             cellValue.appendChild(value);
         }
@@ -228,22 +239,21 @@ module Esriro.Helper
                     break;
             }
         }
-        change_attributes(data:IField[]): void {
+        change_attributes(data: IField[]): void {
+            /*Modificarea atributelor*/
             for (let item of data)
             {
                 console.log(item.field.name, (document.getElementById(item.retrned_id) as HTMLInputElement).value );
             }
         }
     }
+    
 }
-
-
-
 
 import view_model = Esriro.ViewModel;
 import helper = Esriro.Helper;
 let featureLayer = new FeatureLayer({
-    url: "https://services6.arcgis.com/Uwg97gPMK3qqaMen/arcgis/rest/services/HSSEInicdents/FeatureServer/0",
+    url: "",
     outFields:["*"]
 })
 
@@ -257,7 +267,6 @@ let view_model_settings: view_model.IViewModelSettings = {
         container:"viewDiv"
     },
     helper: new helper.Helper(featureLayer)
-
 };
 
 let view_app: view_model.IViewModel = new view_model.ViewModel(view_model_settings);
