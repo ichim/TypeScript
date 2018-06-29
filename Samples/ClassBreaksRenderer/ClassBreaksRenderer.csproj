@@ -27,9 +27,13 @@
     <Content Include="web.config" />
   </ItemGroup>
   <ItemGroup>
+    <TypeScriptCompile Include="%40types\arcgis-js-api\index.d.ts" />
     <TypeScriptCompile Include="app.ts" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="%40types\arcgis-js-api\LICENSE" />
+    <Content Include="%40types\arcgis-js-api\package.json" />
+    <Content Include="%40types\arcgis-js-api\README.md" />
     <None Include="web.Debug.config">
       <DependentUpon>web.config</DependentUpon>
     </None>
