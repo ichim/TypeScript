@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PopupArcade", "PopupArcade\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AttributeEditing", "AttributeEditing\AttributeEditing.csproj", "{DC9C6BB4-908B-4102-AFB3-41D306C1F9D2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClassBreaksRenderer", "ClassBreaksRenderer\ClassBreaksRenderer.csproj", "{56BE63B0-A3E2-48E2-BD23-5161D24816CA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{DC9C6BB4-908B-4102-AFB3-41D306C1F9D2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DC9C6BB4-908B-4102-AFB3-41D306C1F9D2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DC9C6BB4-908B-4102-AFB3-41D306C1F9D2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{56BE63B0-A3E2-48E2-BD23-5161D24816CA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{56BE63B0-A3E2-48E2-BD23-5161D24816CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{56BE63B0-A3E2-48E2-BD23-5161D24816CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{56BE63B0-A3E2-48E2-BD23-5161D24816CA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
