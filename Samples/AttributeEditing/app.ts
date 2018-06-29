@@ -277,7 +277,7 @@ import view_model = Esriro.ViewModel;
 import helper = Esriro.Helper;
 let featureLayer = new FeatureLayer({
     /*url-ul featuelayer-ului pentru care doriti sa editati atributele*/
-    url: "",
+    url: "https://sampleserver6.arcgisonline.com/arcgis/rest/services/Recreation/FeatureServer/0",
     /*Campurile disponibile pentru editare*/
     outFields:["*"]
 })

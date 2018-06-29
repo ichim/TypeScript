@@ -233,7 +233,7 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
     var helper = Esriro.Helper;
     var featureLayer = new FeatureLayer({
         /*url-ul featuelayer-ului pentru care doriti sa editati atributele*/
-        url: "",
+        url: "https://sampleserver6.arcgisonline.com/arcgis/rest/services/Recreation/FeatureServer/0",
         /*Campurile disponibile pentru editare*/
         outFields: ["*"]
     });
