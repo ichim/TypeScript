@@ -276,16 +276,21 @@ module Esriro.Helper
 import view_model = Esriro.ViewModel;
 import helper = Esriro.Helper;
 let featureLayer = new FeatureLayer({
+    /*url-ul featuelayer-ului pentru care doriti sa editati atributele*/
     url: "",
+    /*Campurile disponibile pentru editare*/
     outFields:["*"]
 })
 
 
 
 let view_model_settings: view_model.IViewModelSettings = {
+    /*basemap-ul hartii*/
     map: { basemap: "streets" },
     mapView: {
+        /*pozitia in harta view-ului default*/
         center: [26.52, 45.68],
+        /*nivelul de zoom*/
         zoom: 8,
         container:"viewDiv"
     },
