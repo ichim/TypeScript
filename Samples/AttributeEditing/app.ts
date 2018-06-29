@@ -1,5 +1,5 @@
 ﻿/// <reference path="@types/arcgis-js-api/index.d.ts" />
-
+/*Laurentiu Ichim*/
 import Map = require("esri/Map");
 import MapView = require("esri/views/MapView");
 import FeatureLayer = require("esri/layers/FeatureLayer");

@@ -1,4 +1,3 @@
-/// <reference path="@types/arcgis-js-api/index.d.ts" />
 define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/FeatureLayer"], function (require, exports, Map, MapView, FeatureLayer) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
