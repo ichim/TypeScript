@@ -5,6 +5,7 @@ import MapView = require("esri/views/MapView");
 import FeatureLayer = require("esri/layers/FeatureLayer");
 import Field = require("esri/layers/support/Field");
 import Domain = require("esri/layers/support/Domain");
+import Graphic = require("esri/Graphic");
 
 let id_div_editare: string = "";
 
@@ -92,6 +93,7 @@ module Esriro.AttributesModel
         constructor(public settings: IAttributesModelSettings) {  }
         creteEditForm(fields: Field[], feature: object): string {
             /*Creaza form-ul in care se vor afisa datele atribut si cu care se vor modifica*/
+            console.log("~cEF~", feature);
             let id = "div_editare_" + Math.round(Math.random() * 1000).toString();;
             let parinte = document.createElement("div");
             parinte.style.height = "200px";
@@ -122,8 +124,11 @@ module Esriro.AttributesModel
             let table = document.createElement("table");
             div.style.overflowY = 'auto';
             let attribute_helper = new helper.AttributeHelper(table, "200px");
+            let me = this;
+           
             applyButton.onclick = function () {
-                attribute_helper.change_attributes(attribute_helper.get('data_update'));
+                attribute_helper.change_attributes(attribute_helper.get('data_update'), <Graphic>feature);
+                me.mapView.ui.remove(id_div_editare);
             }
             for (let field of fields) {
                 let valoare: any = feature['attributes'][field.name];
@@ -185,14 +190,10 @@ module Esriro.Helper
 
             let domain = field.domain;
             let value:HTMLInputElement = document.createElement("input");
-            console.log(value instanceof HTMLInputElement );
+            value.id = field.name + Math.round(Math.random() * 1000).toString();
             if (domain !== null && domain.type ==="coded-value"  )
             {
-                console.log(field.name);
                 let value:HTMLSelectElement = document.createElement("select");
-                value.id = field.name + Math.round(Math.random() * 1000).toString();
-                
-                
             } 
 
             let valoare_curenta: IField = {
@@ -239,12 +240,24 @@ module Esriro.Helper
                     break;
             }
         }
-        change_attributes(data: IField[]): void {
+        change_attributes(data: IField[], feature:Graphic): void {
             /*Modificarea atributelor*/
             for (let item of data)
             {
-                console.log(item.field.name, (document.getElementById(item.retrned_id) as HTMLInputElement).value );
+                if (item.field.type !== "oid")
+                {
+                    let atribut = item.field.name;
+                    let valoare = (document.getElementById(item.retrned_id) as HTMLInputElement).value;
+                    feature.attributes[atribut] = valoare;
+                }
+    
             }
+            var edits = {
+                updateFeatures: [feature]
+            };
+            featureLayer.applyEdits(edits).then((applyResults) => {
+                console.log(applyResults);
+            });
         }
     }
     
@@ -253,7 +266,7 @@ module Esriro.Helper
 import view_model = Esriro.ViewModel;
 import helper = Esriro.Helper;
 let featureLayer = new FeatureLayer({
-    url: "",
+    url: "https://services6.arcgis.com/Uwg97gPMK3qqaMen/arcgis/rest/services/HSSEInicdents/FeatureServer/0",
     outFields:["*"]
 })
 

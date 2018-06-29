@@ -53,6 +53,7 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
                 }
                 AttributesModel.prototype.creteEditForm = function (fields, feature) {
                     /*Creaza form-ul in care se vor afisa datele atribut si cu care se vor modifica*/
+                    console.log("~cEF~", feature);
                     var id = "div_editare_" + Math.round(Math.random() * 1000).toString();
                     ;
                     var parinte = document.createElement("div");
@@ -82,8 +83,10 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
                     var table = document.createElement("table");
                     div.style.overflowY = 'auto';
                     var attribute_helper = new helper.AttributeHelper(table, "200px");
+                    var me = this;
                     applyButton.onclick = function () {
-                        attribute_helper.change_attributes(attribute_helper.get('data_update'));
+                        attribute_helper.change_attributes(attribute_helper.get('data_update'), feature);
+                        me.mapView.ui.remove(id_div_editare);
                     };
                     for (var _i = 0, fields_1 = fields; _i < fields_1.length; _i++) {
                         var field = fields_1[_i];
@@ -152,11 +155,9 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
                     var cellValue = row.insertCell(1);
                     var domain = field.domain;
                     var value = document.createElement("input");
-                    console.log(value instanceof HTMLInputElement);
+                    value.id = field.name + Math.round(Math.random() * 1000).toString();
                     if (domain !== null && domain.type === "coded-value") {
-                        console.log(field.name);
                         var value_1 = document.createElement("select");
-                        value_1.id = field.name + Math.round(Math.random() * 1000).toString();
                     }
                     var valoare_curenta = {
                         field: field,
@@ -198,12 +199,22 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
                             break;
                     }
                 };
-                AttributeHelper.prototype.change_attributes = function (data) {
+                AttributeHelper.prototype.change_attributes = function (data, feature) {
                     /*Modificarea atributelor*/
                     for (var _i = 0, data_1 = data; _i < data_1.length; _i++) {
                         var item = data_1[_i];
-                        console.log(item.field.name, document.getElementById(item.retrned_id).value);
+                        if (item.field.type !== "oid") {
+                            var atribut = item.field.name;
+                            var valoare = document.getElementById(item.retrned_id).value;
+                            feature.attributes[atribut] = valoare;
+                        }
                     }
+                    var edits = {
+                        updateFeatures: [feature]
+                    };
+                    featureLayer.applyEdits(edits).then(function (applyResults) {
+                        console.log(applyResults);
+                    });
                 };
                 return AttributeHelper;
             }());
@@ -213,7 +224,7 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
     var view_model = Esriro.ViewModel;
     var helper = Esriro.Helper;
     var featureLayer = new FeatureLayer({
-        url: "",
+        url: "https://services6.arcgis.com/Uwg97gPMK3qqaMen/arcgis/rest/services/HSSEInicdents/FeatureServer/0",
         outFields: ["*"]
     });
     var view_model_settings = {
