@@ -165,6 +165,7 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
                         retrned_id: value.id
                     };
                     this.update_features.push(valoare_curenta);
+                    var _type_ = "number_text";
                     if (value instanceof HTMLInputElement) {
                         if (field.type === "small-integer" ||
                             field.type === "integer" ||
@@ -172,21 +173,21 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
                             field.type === "double" ||
                             field.type === "long") {
                             value.type = "number";
-                            if (attributeValue !== null) {
-                                value.value = attributeValue;
-                            }
+                            _type_ = "number_text";
                         }
                         else if (field.type === "string") {
                             value.type = "text";
-                            if (attributeValue !== null) {
-                                value.value = attributeValue;
-                            }
+                            _type_ = "number_text";
                         }
                         else if (field.type === "date") {
                             value.type = "date";
-                            if (attributeValue !== null) {
-                                value.value = new Date(attributeValue).toDateString();
-                            }
+                            _type_ = "date";
+                        }
+                        if (attributeValue !== null && _type_ === "number_text") {
+                            value.value = attributeValue;
+                        }
+                        else if (attributeValue !== null && _type_ === "date") {
+                            value.value = new Date(attributeValue).toDateString();
                         }
                     }
                     value.style.width = width.toString() + "px";
@@ -224,7 +225,7 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
     var view_model = Esriro.ViewModel;
     var helper = Esriro.Helper;
     var featureLayer = new FeatureLayer({
-        url: "https://services6.arcgis.com/Uwg97gPMK3qqaMen/arcgis/rest/services/HSSEInicdents/FeatureServer/0",
+        url: "",
         outFields: ["*"]
     });
     var view_model_settings = {

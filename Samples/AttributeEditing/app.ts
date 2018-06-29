@@ -9,7 +9,6 @@ import Graphic = require("esri/Graphic");
 
 let id_div_editare: string = "";
 
-
 interface IField
 {
     field: Field;
@@ -24,7 +23,6 @@ module Esriro.ViewModel
         wrap(): void;
         add(layer: FeatureLayer): void;
         get(type: string): any;
-        //creteEditForm(fields: Field[], feature:object): string;
     }
     export interface IViewModelSettings
     {
@@ -187,7 +185,6 @@ module Esriro.Helper
             header.innerHTML = field.alias;
             header.style.color = color;
             let cellValue = row.insertCell(1);
-
             let domain = field.domain;
             let value:HTMLInputElement = document.createElement("input");
             value.id = field.name + Math.round(Math.random() * 1000).toString();
@@ -203,6 +200,9 @@ module Esriro.Helper
             }
             this.update_features.push(valoare_curenta);
 
+
+            let _type_ = "number_text";
+
             if (value instanceof HTMLInputElement)
             {
                 if (field.type === "small-integer" ||
@@ -211,20 +211,22 @@ module Esriro.Helper
                     field.type === "double" ||
                     field.type === "long") {
                     value.type = "number"
-                    if (attributeValue !== null) {
-                        value.value = <string>attributeValue;
-                    }
+                    _type_ = "number_text";
+                   
                 } else if (field.type === "string") {
                     value.type = "text";
-                    if (attributeValue !== null) {
-                        value.value = <string>attributeValue;
-                    }
+                    _type_ = "number_text";
                 } else if (field.type === "date") {
                     value.type = "date";
-                    if (attributeValue !== null) {
+                    _type_ = "date";
+                }
 
+                if (attributeValue !== null && _type_ === "number_text")
+                {
+                        value.value = <string>attributeValue;   
+                } else if (attributeValue !== null && _type_ === "date")
+                {
                         value.value = new Date(<number>attributeValue).toDateString();
-                    }
                 }
             } 
  
@@ -266,7 +268,7 @@ module Esriro.Helper
 import view_model = Esriro.ViewModel;
 import helper = Esriro.Helper;
 let featureLayer = new FeatureLayer({
-    url: "https://services6.arcgis.com/Uwg97gPMK3qqaMen/arcgis/rest/services/HSSEInicdents/FeatureServer/0",
+    url: "",
     outFields:["*"]
 })
 
