@@ -128,10 +128,12 @@ module Esriro.AttributesModel
                 attribute_helper.change_attributes(attribute_helper.get('data_update'), <Graphic>feature);
                 me.mapView.ui.remove(id_div_editare);
             }
+
             for (let field of fields) {
                 let valoare: any = feature['attributes'][field.name];
                 attribute_helper.add(field, valoare);
             }
+
             div.appendChild(table);
             this.mapView.ui.remove(id_div_editare);
             this.mapView.ui.add(parinte, "top-right");
@@ -148,6 +150,8 @@ module Esriro.AttributesModel
                         this.settings.helper.fields((fields) => {
                             this.creteEditForm(fields, feature);
                         });
+                    } else {
+                        this.mapView.ui.remove(id_div_editare);
                     }
                 });
             });
@@ -200,7 +204,6 @@ module Esriro.Helper
             }
             this.update_features.push(valoare_curenta);
 
-
             let _type_ = "number_text";
 
             if (value instanceof HTMLInputElement)
@@ -226,7 +229,10 @@ module Esriro.Helper
                         value.value = <string>attributeValue;   
                 } else if (attributeValue !== null && _type_ === "date")
                 {
-                        value.value = new Date(<number>attributeValue).toDateString();
+
+                    let data = new Date(<number>attributeValue);
+                    console.log('data',data);
+                        value.value = "2008 08 26";
                 }
             } 
  
@@ -252,7 +258,6 @@ module Esriro.Helper
                     let valoare = (document.getElementById(item.retrned_id) as HTMLInputElement).value;
                     feature.attributes[atribut] = valoare;
                 }
-    
             }
             var edits = {
                 updateFeatures: [feature]
@@ -262,7 +267,6 @@ module Esriro.Helper
             });
         }
     }
-    
 }
 
 import view_model = Esriro.ViewModel;

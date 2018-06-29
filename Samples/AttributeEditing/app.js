@@ -111,6 +111,9 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
                                     _this.creteEditForm(fields, feature);
                                 });
                             }
+                            else {
+                                _this.mapView.ui.remove(id_div_editare);
+                            }
                         });
                     });
                 };
@@ -187,7 +190,9 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
                             value.value = attributeValue;
                         }
                         else if (attributeValue !== null && _type_ === "date") {
-                            value.value = new Date(attributeValue).toDateString();
+                            var data = new Date(attributeValue);
+                            console.log('data', data);
+                            value.value = "2008 08 26";
                         }
                     }
                     value.style.width = width.toString() + "px";
