@@ -58,7 +58,7 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
                     ;
                     var parinte = document.createElement("div");
                     parinte.style.height = "200px";
-                    parinte.style.width = "260px";
+                    parinte.style.width = "320px";
                     parinte.id = id;
                     var bara1 = document.createElement('div');
                     bara1.style.height = "20px";
@@ -75,14 +75,14 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
                     bara2.appendChild(applyButton);
                     var div = document.createElement("div");
                     div.style.height = "200px";
-                    div.style.width = "260px";
+                    div.style.width = "320px";
                     div.style.backgroundColor = "white";
                     parinte.appendChild(bara1);
                     parinte.appendChild(div);
                     parinte.appendChild(bara2);
                     var table = document.createElement("table");
                     div.style.overflowY = 'auto';
-                    var attribute_helper = new helper.AttributeHelper(table, "200px");
+                    var attribute_helper = new helper.AttributeHelper(table, "280px");
                     var me = this;
                     applyButton.onclick = function () {
                         attribute_helper.change_attributes(attribute_helper.get('data_update'), feature);
@@ -155,6 +155,7 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
                     header.style.width = width.toString() + "px";
                     header.innerHTML = field.alias;
                     header.style.color = color;
+                    header.style.fontSize = "14px";
                     var cellValue = row.insertCell(1);
                     var domain = field.domain;
                     var value = document.createElement("input");
@@ -169,6 +170,7 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
                     };
                     this.update_features.push(valoare_curenta);
                     var _type_ = "number_text";
+                    value.disabled = !field.editable;
                     if (value instanceof HTMLInputElement) {
                         if (field.type === "small-integer" ||
                             field.type === "integer" ||
@@ -186,17 +188,17 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
                             value.type = "date";
                             _type_ = "date";
                         }
-                        if (attributeValue !== null && _type_ === "number_text") {
-                            value.value = attributeValue;
-                        }
-                        else if (attributeValue !== null && _type_ === "date") {
-                            var data = new Date(attributeValue);
-                            console.log('data', data);
-                            value.value = "2008 08 26";
-                        }
                     }
                     value.style.width = width.toString() + "px";
                     cellValue.appendChild(value);
+                    if (attributeValue !== null && _type_ === "number_text") {
+                        value.value = attributeValue;
+                    }
+                    else if (attributeValue !== null && _type_ === "date") {
+                        var data = new Date(attributeValue);
+                        console.log('data', data);
+                        value.value = "2008-08-08";
+                    }
                 };
                 AttributeHelper.prototype.get = function (type) {
                     switch (type) {

@@ -95,7 +95,7 @@ module Esriro.AttributesModel
             let id = "div_editare_" + Math.round(Math.random() * 1000).toString();;
             let parinte = document.createElement("div");
             parinte.style.height = "200px";
-            parinte.style.width = "260px";
+            parinte.style.width = "320px";
             parinte.id = id;
             let bara1 = document.createElement('div');
             bara1.style.height = "20px";
@@ -114,14 +114,14 @@ module Esriro.AttributesModel
 
             let div = document.createElement("div");
             div.style.height = "200px";
-            div.style.width = "260px";
+            div.style.width = "320px";
             div.style.backgroundColor = "white";
             parinte.appendChild(bara1);
             parinte.appendChild(div);
             parinte.appendChild(bara2);
             let table = document.createElement("table");
             div.style.overflowY = 'auto';
-            let attribute_helper = new helper.AttributeHelper(table, "200px");
+            let attribute_helper = new helper.AttributeHelper(table, "280px");
             let me = this;
            
             applyButton.onclick = function () {
@@ -188,6 +188,7 @@ module Esriro.Helper
             header.style.width = width.toString() + "px";
             header.innerHTML = field.alias;
             header.style.color = color;
+            header.style.fontSize = "14px";
             let cellValue = row.insertCell(1);
             let domain = field.domain;
             let value:HTMLInputElement = document.createElement("input");
@@ -196,6 +197,7 @@ module Esriro.Helper
             {
                 let value:HTMLSelectElement = document.createElement("select");
             } 
+            
 
             let valoare_curenta: IField = {
                 field: field,
@@ -205,6 +207,8 @@ module Esriro.Helper
             this.update_features.push(valoare_curenta);
 
             let _type_ = "number_text";
+            value.disabled = !field.editable;
+           
 
             if (value instanceof HTMLInputElement)
             {
@@ -224,20 +228,20 @@ module Esriro.Helper
                     _type_ = "date";
                 }
 
-                if (attributeValue !== null && _type_ === "number_text")
-                {
-                        value.value = <string>attributeValue;   
-                } else if (attributeValue !== null && _type_ === "date")
-                {
-
-                    let data = new Date(<number>attributeValue);
-                    console.log('data',data);
-                        value.value = "2008 08 26";
-                }
+              
             } 
  
             value.style.width = width.toString() + "px";
             cellValue.appendChild(value);
+
+            if (attributeValue !== null && _type_ === "number_text") {
+                value.value = <string>attributeValue;
+            } else if (attributeValue !== null && _type_ === "date") {
+
+                let data = new Date(<number>attributeValue);
+                console.log('data', data);
+                value.value = "2008-08-08";
+            }
         }
         get(type: string): IField[]
         {
